@@ -8,10 +8,13 @@
 import SwiftUI
 
 @main
-struct MoviesAppApp: App {
+struct MoviesApp: App {
+    @StateObject var store = Store(state: AppState(), reducer: appReducer)
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(store)
         }
     }
 }

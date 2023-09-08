@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var store: Store<AppState>
+    
     var body: some View {
         VStack {
             Image(systemName: "globe")
@@ -20,7 +22,10 @@ struct ContentView: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
+    static let store = Store(state: AppState(), reducer: appReducer)
+    
     static var previews: some View {
         ContentView()
+            .environmentObject(store)
     }
 }
