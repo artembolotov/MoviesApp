@@ -16,19 +16,33 @@ typealias Reducer<State: ReduxState> = (_ state: State, _ action: Action) -> Sta
 typealias Middleware<State: ReduxState> = (State, Action, @escaping Dispatcher) -> Void
 
 struct AppState: ReduxState {
-    
+    var movies = MoviesState()
 }
 
-@MainActor
+struct MoviesState: ReduxState {
+    var movies = [Movie]()
+    var selectedMovieDetails: MovieDetails?
+}
+
 final class Store<StoreState: ReduxState>: ObservableObject {
-    @Published var state: StoreState
+    @Published private(set) var state: StoreState
     
-    var reducer: Reducer<StoreState>
-    var middlewares: [Middleware<StoreState>]
+    private var reducer: Reducer<StoreState>
+    private var middlewares: [Middleware<StoreState>]
     
     init(state: StoreState, reducer: @escaping Reducer<StoreState>, middlewares: [Middleware<StoreState>] = []) {
         self.state = state
         self.reducer = reducer
         self.middlewares = middlewares
+    }
+    
+    func dispatch(action: Action) {
+        Task { @MainActor in
+            state = reducer(state, action)
+        }
+        
+        middlewares.forEach { middleware in
+            middleware(state, action, dispatch)
+        }
     }
 }

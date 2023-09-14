@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct MoviesApp: App {
-    @StateObject var store = Store(state: AppState(), reducer: appReducer)
+    @StateObject var store = Store(state: AppState(), reducer: appReducer, middlewares: [moviesMiddleware()])
     
     var body: some Scene {
         WindowGroup {
